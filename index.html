@@ -1,0 +1,1954 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Lab Maya Pendidikan Pancasila Kelas 5 - Fase C</title>
+    <style>
+        /* ======================================================================
+           1. DESIGN TOKENS & BASE STYLES (100% STANDALONE OFFLINE CSS)
+           ====================================================================== */
+        :root {
+            --bg-backdrop-start: #1E293B;
+            --bg-backdrop-mid: #7F1D1D;
+            --bg-backdrop-end: #1E3A8A;
+
+            --surface-main: #F8FAFC;
+            --surface-card: #FFFFFF;
+            --surface-soft: #F1F5F9;
+
+            --ink-dark: #0F172A;
+            --ink-muted: #475569;
+            --border-line: #CBD5E1;
+
+            --red-pancasila: #DC2626;
+            --red-dark: #991B1B;
+            --gold-accent: #F59E0B;
+            --gold-bright: #FBBF24;
+            --blue-royal: #2563EB;
+            --blue-dark: #1E40AF;
+            --emerald-safe: #059669;
+            --purple-norm: #7C3AED;
+
+            --font-head: 'Trebuchet MS', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            --font-body: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            font-family: var(--font-body);
+            color: var(--ink-dark);
+            background: linear-gradient(135deg, var(--bg-backdrop-start) 0%, var(--bg-backdrop-mid) 52%, var(--bg-backdrop-end) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px;
+        }
+
+        /* ======================================================================
+           2. KANVAS 16:9 FULL SCREEN TANPA SCROLLING GLOBAL
+           ====================================================================== */
+        #lab-stage-16x9 {
+            width: 100%;
+            height: 100%;
+            max-width: 1366px;
+            max-height: 768px;
+            aspect-ratio: 16 / 9;
+            background: var(--surface-main);
+            border-radius: 22px;
+            border: 4px solid rgba(255, 255, 255, 0.88);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.55);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        @media (max-width: 900px), (max-height: 560px) {
+            body {
+                padding: 4px;
+            }
+            #lab-stage-16x9 {
+                aspect-ratio: auto;
+                max-width: 100%;
+                max-height: 100%;
+                border-radius: 14px;
+                border-width: 2px;
+            }
+        }
+
+        /* ======================================================================
+           3. SPLASH SCREEN (LOADING 0-100%, INPUT NAMA & NO ABSEN, TOMBOL MULAI)
+           ====================================================================== */
+        #splash-overlay {
+            position: absolute;
+            inset: 0;
+            z-index: 120;
+            background: linear-gradient(135deg, #991B1B 0%, #B91C1C 45%, #1E3A8A 100%);
+            color: #FFFFFF;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            text-align: center;
+        }
+
+        .splash-top-pill {
+            display: inline-block;
+            background: var(--gold-bright);
+            color: var(--ink-dark);
+            font-weight: 900;
+            font-size: 0.78rem;
+            padding: 5px 15px;
+            border-radius: 999px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
+            margin-bottom: 6px;
+        }
+
+        .splash-title {
+            font-family: var(--font-head);
+            font-size: clamp(1.3rem, 2.8vw, 2.2rem);
+            font-weight: 900;
+            line-height: 1.15;
+            text-shadow: 0 3px 10px rgba(0, 0, 0, 0.35);
+            margin-bottom: 4px;
+        }
+
+        .splash-subtitle {
+            font-size: clamp(0.84rem, 1.45vw, 1.08rem);
+            color: #FEF08A;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .splash-dev-info {
+            font-size: 0.82rem;
+            color: #F8FAFC;
+            background: rgba(15, 23, 42, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 5px 14px;
+            border-radius: 10px;
+            display: inline-block;
+        }
+
+        /* Kartu Input Nama & No. Absen pada Splash Screen */
+        .splash-identity-box {
+            width: 100%;
+            max-width: 480px;
+            background: rgba(255, 255, 255, 0.96);
+            color: var(--ink-dark);
+            border-radius: 16px;
+            padding: 12px 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            border: 2px solid var(--gold-bright);
+            text-align: left;
+        }
+
+        .splash-identity-title {
+            font-family: var(--font-head);
+            font-size: 0.88rem;
+            font-weight: 900;
+            color: var(--red-dark);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .splash-input-grid {
+            display: grid;
+            grid-template-columns: 1fr 125px;
+            gap: 10px;
+        }
+
+        .splash-field-group {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .splash-field-group label {
+            font-size: 0.74rem;
+            font-weight: 800;
+            color: var(--ink-muted);
+        }
+
+        .splash-input {
+            width: 100%;
+            padding: 8px 11px;
+            border: 2px solid #CBD5E1;
+            border-radius: 10px;
+            font-family: var(--font-body);
+            font-size: 0.88rem;
+            font-weight: 800;
+            color: var(--ink-dark);
+            background: #FFFFFF;
+            min-height: 38px;
+            outline: none;
+            transition: border-color 0.15s;
+        }
+
+        .splash-input:focus {
+            border-color: var(--blue-royal);
+            background: #EFF6FF;
+        }
+
+        .splash-warning-msg {
+            font-size: 0.74rem;
+            font-weight: 800;
+            color: var(--red-pancasila);
+            margin-top: 6px;
+            min-height: 16px;
+        }
+
+        .splash-bottom-box {
+            width: 100%;
+            max-width: 480px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .progress-head {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.78rem;
+            font-weight: 800;
+            color: #FEF08A;
+            margin-bottom: 4px;
+        }
+
+        .progress-rail {
+            width: 100%;
+            height: 12px;
+            background: rgba(15, 23, 42, 0.55);
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            border-radius: 999px;
+            padding: 2px;
+            overflow: hidden;
+        }
+
+        .progress-bar-inner {
+            height: 100%;
+            width: 0%;
+            border-radius: 999px;
+            background: linear-gradient(90deg, #FBBF24, #34D399, #60A5FA);
+            transition: width 0.1s linear;
+        }
+
+        .btn-mulai-lab {
+            display: none;
+            width: 100%;
+            padding: 12px 24px;
+            background: linear-gradient(180deg, #FDE047 0%, #F59E0B 100%);
+            color: var(--ink-dark);
+            font-family: var(--font-head);
+            font-size: 1.15rem;
+            font-weight: 900;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            box-shadow: 0 5px 0 #B45309, 0 10px 20px rgba(0, 0, 0, 0.35);
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-height: 48px;
+        }
+
+        .btn-mulai-lab:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 #B45309;
+        }
+
+        @media (max-width: 600px) {
+            .splash-input-grid {
+                grid-template-columns: 1fr;
+                gap: 6px;
+            }
+        }
+
+        /* ======================================================================
+           4. HEADER, IDENTITAS MURID, 5 TAB & KONTROL SUARA / RESET
+           ====================================================================== */
+        header {
+            background: linear-gradient(90deg, #0F172A 0%, #991B1B 50%, #0F172A 100%);
+            color: #FFFFFF;
+            padding: 6px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            flex-shrink: 0;
+            border-bottom: 2px solid #334155;
+        }
+
+        .brand-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 0;
+        }
+
+        .garuda-badge {
+            width: 34px;
+            height: 34px;
+            border-radius: 9px;
+            background: linear-gradient(135deg, #EF4444, #F59E0B);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            border: 1.5px solid #FEF08A;
+        }
+
+        .brand-titles h1 {
+            font-family: var(--font-head);
+            font-size: 0.9rem;
+            font-weight: 900;
+            white-space: nowrap;
+        }
+
+        .murid-chip-header {
+            font-size: 0.7rem;
+            color: #FEF08A;
+            font-weight: 800;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 240px;
+        }
+
+        .nav-tabs-bar {
+            display: flex;
+            background: rgba(15, 23, 42, 0.85);
+            padding: 3px;
+            border-radius: 11px;
+            border: 1px solid #475569;
+            gap: 3px;
+        }
+
+        .tab-trigger {
+            background: transparent;
+            border: none;
+            color: #E2E8F0;
+            font-family: var(--font-body);
+            font-size: 0.78rem;
+            font-weight: 800;
+            padding: 6px 11px;
+            border-radius: 8px;
+            cursor: pointer;
+            min-height: 34px;
+            transition: all 0.15s ease;
+        }
+
+        .tab-trigger:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #FFFFFF;
+        }
+
+        .tab-trigger.active {
+            background: var(--gold-bright);
+            color: var(--ink-dark);
+            box-shadow: 0 2px 6px rgba(251, 191, 36, 0.45);
+        }
+
+        .header-right-tools {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .hdr-btn {
+            background: #1E293B;
+            border: 1px solid #64748B;
+            color: #FEF08A;
+            padding: 6px 10px;
+            border-radius: 9px;
+            font-size: 0.74rem;
+            font-weight: 800;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            min-height: 34px;
+        }
+
+        .hdr-btn:hover {
+            background: #334155;
+        }
+
+        .hdr-btn.reset-top {
+            color: #FECACA;
+            border-color: #DC2626;
+        }
+
+        @media (max-width: 880px) {
+            header {
+                flex-wrap: wrap;
+                padding: 5px 8px;
+            }
+            .murid-chip-header {
+                max-width: 160px;
+                font-size: 0.66rem;
+            }
+            .nav-tabs-bar {
+                order: 3;
+                width: 100%;
+                justify-content: space-between;
+            }
+            .tab-trigger {
+                flex: 1;
+                padding: 5px 3px;
+                font-size: 0.72rem;
+            }
+        }
+
+        /* ======================================================================
+           5. MAIN WORKSPACE (16:9 TANPA SCROLL GLOBAL DI DESKTOP)
+           ====================================================================== */
+        main {
+            flex: 1;
+            padding: 10px 14px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .tab-content-pane {
+            display: none;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .tab-content-pane.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        @media (max-width: 900px), (max-height: 560px) {
+            main {
+                padding: 7px 9px;
+            }
+            .tab-content-pane.active {
+                overflow-y: auto;
+            }
+        }
+
+        .sub-pill-nav {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-bottom: 8px;
+            flex-shrink: 0;
+        }
+
+        .pill-btn {
+            background: #E2E8F0;
+            color: var(--ink-dark);
+            border: 2px solid transparent;
+            padding: 6px 12px;
+            border-radius: 10px;
+            font-size: 0.78rem;
+            font-weight: 800;
+            cursor: pointer;
+            min-height: 36px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.15s;
+        }
+
+        .pill-btn:hover {
+            background: #CBD5E1;
+        }
+
+        .pill-btn.active {
+            background: var(--red-pancasila);
+            color: #FFFFFF;
+            box-shadow: 0 3px 8px rgba(220, 38, 38, 0.3);
+        }
+
+        /* ======================================================================
+           6. TAB 1: TEORI (JENIS NORMA & PENERAPAN DI 3 LINGKUNGAN)
+           ====================================================================== */
+        .teori-split-grid {
+            display: grid;
+            grid-template-columns: 36% 64%;
+            gap: 12px;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .teori-visual-card {
+            background: var(--surface-card);
+            border: 2px solid var(--border-line);
+            border-radius: 16px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            text-align: center;
+        }
+
+        .teori-visual-card h3 {
+            font-family: var(--font-head);
+            font-size: 0.96rem;
+            color: var(--red-dark);
+        }
+
+        .teori-list-panel {
+            background: var(--surface-card);
+            border: 2px solid var(--border-line);
+            border-radius: 16px;
+            padding: 10px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+            overflow-y: auto;
+        }
+
+        .norm-card {
+            background: var(--surface-soft);
+            border: 1px solid #E2E8F0;
+            border-left: 5px solid var(--red-pancasila);
+            border-radius: 10px;
+            padding: 8px 11px;
+            cursor: pointer;
+            transition: transform 0.12s, background 0.15s;
+        }
+
+        .norm-card:hover {
+            background: #EFF6FF;
+            transform: translateX(2px);
+        }
+
+        .norm-card.highlighted {
+            background: #FEF9C3;
+            border-color: var(--gold-accent);
+        }
+
+        .norm-card h4 {
+            font-size: 0.85rem;
+            font-weight: 900;
+            color: var(--ink-dark);
+            margin-bottom: 2px;
+        }
+
+        .norm-card p {
+            font-size: 0.76rem;
+            color: var(--ink-muted);
+            line-height: 1.38;
+        }
+
+        @media (max-width: 860px) {
+            .teori-split-grid {
+                grid-template-columns: 1fr;
+                overflow: visible;
+            }
+        }
+
+        /* ======================================================================
+           7. TAB 2: PROSEDUR PENGGUNAAN
+           ====================================================================== */
+        .prosedur-panel {
+            background: var(--surface-card);
+            border: 2px solid var(--border-line);
+            border-radius: 18px;
+            padding: 16px 20px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .prosedur-heading {
+            font-family: var(--font-head);
+            font-size: 1.15rem;
+            color: var(--red-dark);
+            border-bottom: 2px solid #FEE2E2;
+            padding-bottom: 8px;
+        }
+
+        .proc-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin: 8px 0;
+        }
+
+        .proc-step-box {
+            background: var(--surface-soft);
+            border: 1.5px solid #E2E8F0;
+            border-radius: 12px;
+            padding: 10px 12px;
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+
+        .step-circle {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--red-pancasila);
+            color: #FFFFFF;
+            font-weight: 900;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .proc-step-box h4 {
+            font-size: 0.86rem;
+            font-weight: 800;
+            margin-bottom: 2px;
+        }
+
+        .proc-step-box p {
+            font-size: 0.76rem;
+            color: var(--ink-muted);
+            line-height: 1.38;
+        }
+
+        .proc-footer-note {
+            background: #FEF3C7;
+            border: 1.5px solid var(--gold-accent);
+            border-radius: 11px;
+            padding: 8px 12px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: #78350F;
+        }
+
+        @media (max-width: 780px) {
+            .prosedur-panel {
+                height: auto;
+            }
+            .proc-cards-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ======================================================================
+           8. TAB 3: SIMULASI PENERAPAN NORMA (KELUARGA, MASYARAKAT, SEKOLAH)
+           ====================================================================== */
+        .sim-main-card {
+            background: var(--surface-card);
+            border: 2px solid var(--border-line);
+            border-radius: 16px;
+            padding: 10px 14px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow: hidden;
+        }
+
+        .sim-top-info {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            border-bottom: 1.5px solid #E2E8F0;
+            padding-bottom: 6px;
+            margin-bottom: 7px;
+            flex-shrink: 0;
+        }
+
+        .sim-top-info h3 {
+            font-family: var(--font-head);
+            font-size: 0.95rem;
+            color: var(--ink-dark);
+        }
+
+        .sim-status-pill {
+            background: #0F172A;
+            color: #FEF08A;
+            padding: 4px 12px;
+            border-radius: 999px;
+            font-size: 0.76rem;
+            font-weight: 800;
+        }
+
+        .behavior-pool {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            background: #F1F5F9;
+            border: 1.5px dashed #94A3B8;
+            border-radius: 11px;
+            padding: 7px;
+            min-height: 46px;
+            margin-bottom: 8px;
+            flex-shrink: 0;
+        }
+
+        .behavior-chip {
+            background: #FFFFFF;
+            border: 2px solid var(--blue-royal);
+            color: var(--ink-dark);
+            padding: 5px 10px;
+            border-radius: 9px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            cursor: pointer;
+            min-height: 34px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: transform 0.12s;
+        }
+
+        .behavior-chip:hover {
+            background: #EFF6FF;
+        }
+
+        .behavior-chip.active-pick {
+            background: var(--gold-bright);
+            border-color: #B45309;
+            transform: scale(1.04);
+        }
+
+        .env-buckets-3col {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .env-bucket {
+            border: 2px dashed #64748B;
+            border-radius: 13px;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+            overflow-y: auto;
+            transition: border-color 0.15s, background 0.15s;
+        }
+
+        .env-bucket.keluarga {
+            background: #FFFBEB;
+            border-color: #D97706;
+        }
+
+        .env-bucket.masyarakat {
+            background: #F0F9FF;
+            border-color: #0284C7;
+        }
+
+        .env-bucket.sekolah {
+            background: #ECFDF5;
+            border-color: #059669;
+        }
+
+        .env-bucket:hover {
+            filter: brightness(0.98);
+        }
+
+        .env-bucket-head {
+            font-size: 0.8rem;
+            font-weight: 900;
+            padding-bottom: 5px;
+            margin-bottom: 6px;
+            border-bottom: 1.5px solid rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .env-bucket-items {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            flex: 1;
+        }
+
+        .sim-bottom-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            border-top: 1.5px solid #E2E8F0;
+            padding-top: 7px;
+            margin-top: 7px;
+            flex-shrink: 0;
+        }
+
+        .sim-feedback-line {
+            flex: 1;
+            font-size: 0.78rem;
+            font-weight: 800;
+            background: #F1F5F9;
+            color: var(--ink-dark);
+            padding: 6px 10px;
+            border-radius: 8px;
+        }
+
+        .sim-feedback-line.sukses {
+            background: #DCFCE7;
+            color: #166534;
+        }
+
+        .sim-feedback-line.gagal {
+            background: #FEE2E2;
+            color: #991B1B;
+        }
+
+        .btn-ui {
+            border: none;
+            border-radius: 10px;
+            padding: 7px 14px;
+            font-size: 0.78rem;
+            font-weight: 800;
+            cursor: pointer;
+            min-height: 36px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-ui:active {
+            transform: scale(0.96);
+        }
+
+        .btn-ui-green {
+            background: var(--emerald-safe);
+            color: #FFFFFF;
+        }
+
+        .btn-ui-gray {
+            background: #E2E8F0;
+            color: var(--ink-dark);
+        }
+
+        @media (max-width: 850px) {
+            .sim-main-card {
+                overflow-y: auto;
+            }
+            .env-buckets-3col {
+                grid-template-columns: 1fr;
+                overflow: visible;
+            }
+        }
+
+        /* ======================================================================
+           9. TAB 4: LKPD (15 SOAL ISIAN SINGKAT + IDENTITAS + NILAI OTOMATIS)
+           ====================================================================== */
+        .lkpd-main-sheet {
+            background: var(--surface-card);
+            border: 2px solid var(--border-line);
+            border-radius: 16px;
+            padding: 10px 14px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .lkpd-top-identity {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            border-bottom: 2px solid #E2E8F0;
+            padding-bottom: 7px;
+            margin-bottom: 8px;
+            flex-shrink: 0;
+        }
+
+        .id-inputs-wrap {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .id-input-box {
+            border: 1.5px solid #CBD5E1;
+            border-radius: 8px;
+            padding: 5px 9px;
+            font-size: 0.78rem;
+            font-weight: 800;
+            color: var(--ink-dark);
+            min-height: 34px;
+        }
+
+        .id-input-box:focus {
+            border-color: var(--blue-royal);
+            background: #EFF6FF;
+            outline: none;
+        }
+
+        .lkpd-nilai-box {
+            background: #0F172A;
+            color: #FEF08A;
+            padding: 5px 12px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: 900;
+        }
+
+        .lkpd-15-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 7px 10px;
+            overflow-y: auto;
+            padding-right: 3px;
+            flex: 1;
+        }
+
+        .lkpd-soal-box {
+            background: var(--surface-soft);
+            border: 1.5px solid #E2E8F0;
+            border-radius: 10px;
+            padding: 6px 9px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .lkpd-soal-box.betul {
+            border-color: var(--emerald-safe);
+            background: #ECFDF5;
+        }
+
+        .lkpd-soal-box.keliru {
+            border-color: var(--red-pancasila);
+            background: #FFF1F2;
+        }
+
+        .lkpd-topik-label {
+            font-size: 0.65rem;
+            font-weight: 900;
+            color: var(--red-dark);
+            text-transform: uppercase;
+        }
+
+        .lkpd-teks-soal {
+            font-size: 0.74rem;
+            font-weight: 700;
+            color: var(--ink-dark);
+            line-height: 1.3;
+        }
+
+        .lkpd-jawab-input {
+            width: 100%;
+            border: 1.5px solid #94A3B8;
+            border-radius: 7px;
+            padding: 4px 7px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            min-height: 31px;
+        }
+
+        .lkpd-jawab-input:focus {
+            border-color: var(--blue-royal);
+            background: #EFF6FF;
+            outline: none;
+        }
+
+        .lkpd-hasil-singkat {
+            font-size: 0.69rem;
+            font-weight: 800;
+            line-height: 1.25;
+            display: none;
+        }
+
+        @media (max-width: 960px) {
+            .lkpd-15-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 640px) {
+            .lkpd-main-sheet {
+                height: auto;
+            }
+            .lkpd-15-grid {
+                grid-template-columns: 1fr;
+                overflow: visible;
+            }
+        }
+
+        /* ======================================================================
+           10. TAB 5: PENGEMBANG
+           ====================================================================== */
+        .pengembang-card {
+            max-width: 740px;
+            width: 100%;
+            margin: auto;
+            background: var(--surface-card);
+            border: 2px solid var(--border-line);
+            border-radius: 20px;
+            padding: 20px 24px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .pengembang-avatar {
+            width: 76px;
+            height: 76px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #DC2626, #F59E0B);
+            color: #FFFFFF;
+            font-family: var(--font-head);
+            font-size: 1.75rem;
+            font-weight: 900;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 4px solid #FEE2E2;
+        }
+
+        .pengembang-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            width: 100%;
+            text-align: left;
+            margin-top: 4px;
+        }
+
+        .pengembang-box {
+            background: var(--surface-soft);
+            border: 1.5px solid #E2E8F0;
+            border-radius: 12px;
+            padding: 10px 12px;
+        }
+
+        .pengembang-box h4 {
+            font-size: 0.76rem;
+            font-weight: 900;
+            color: var(--red-dark);
+            text-transform: uppercase;
+            margin-bottom: 3px;
+        }
+
+        .pengembang-box p {
+            font-size: 0.78rem;
+            color: var(--ink-muted);
+            line-height: 1.4;
+        }
+
+        .pengembang-nav-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 4px;
+        }
+
+        @media (max-width: 650px) {
+            .pengembang-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ======================================================================
+           11. CUSTOM MODAL DIALOG (PENGGANTI alert() & confirm())
+           ====================================================================== */
+        .modal-backdrop-custom {
+            position: absolute;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.72);
+            backdrop-filter: blur(4px);
+            z-index: 130;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+
+        .modal-backdrop-custom.show {
+            display: flex;
+        }
+
+        .modal-box-custom {
+            background: #FFFFFF;
+            border-radius: 18px;
+            max-width: 420px;
+            width: 100%;
+            padding: 20px;
+            text-align: center;
+            border: 3px solid #E2E8F0;
+            box-shadow: 0 20px 35px rgba(0, 0, 0, 0.35);
+        }
+
+        .modal-box-custom h3 {
+            font-family: var(--font-head);
+            font-size: 1.15rem;
+            margin-bottom: 8px;
+        }
+
+        .modal-box-custom p {
+            font-size: 0.84rem;
+            color: var(--ink-muted);
+            margin-bottom: 16px;
+            line-height: 1.45;
+        }
+
+        .modal-btn-row {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="lab-stage-16x9">
+        <!-- ==================================================================
+             SPLASH SCREEN (INDIKATOR LOADING, INPUT NAMA & NO ABSEN, TOMBOL MULAI)
+             ================================================================== -->
+        <section id="splash-overlay">
+            <div>
+                <div class="splash-top-pill">SD Negeri Nyanglan • Pendidikan Pancasila Fase C</div>
+                <h1 class="splash-title">LAB MAYA PENDIDIKAN PANCASILA</h1>
+                <p class="splash-subtitle">Jenis-Jenis Norma &amp; Penerapannya di Lingkungan Keluarga, Masyarakat, dan Sekolah</p>
+                <div class="splash-dev-info">
+                    Pengembang: <strong>I Wayan Wija Astawa, S.Pd.</strong> • Kelas 5 SD
+                </div>
+            </div>
+
+            <!-- Kolom Input Nama Murid & No. Absen Murid -->
+            <div class="splash-identity-box">
+                <div class="splash-identity-title">
+                    <span>Identitas Murid Kelas 5</span>
+                    <span style="font-size:0.7rem; color:#059669; font-weight:800;">Otomatis Masuk ke LKPD</span>
+                </div>
+                <div class="splash-input-grid">
+                    <div class="splash-field-group">
+                        <label for="splash-nama-murid">Nama Lengkap Murid *</label>
+                        <input type="text" id="splash-nama-murid" class="splash-input" placeholder="Ketik nama kamu di sini..." autocomplete="off" oninput="sinkronIdentitasDariSplash()">
+                    </div>
+                    <div class="splash-field-group">
+                        <label for="splash-no-absen">No. Absen *</label>
+                        <input type="text" id="splash-no-absen" class="splash-input" placeholder="Contoh: 05" autocomplete="off" oninput="sinkronIdentitasDariSplash()">
+                    </div>
+                </div>
+                <div class="splash-warning-msg" id="splash-warn"></div>
+            </div>
+
+            <!-- Indikator Loading & Tombol MULAI -->
+            <div class="splash-bottom-box">
+                <div id="splash-loading-box">
+                    <div class="progress-head">
+                        <span>Memuat Lab Maya &amp; Efek Suara...</span>
+                        <span id="splash-pct-text">0%</span>
+                    </div>
+                    <div class="progress-rail">
+                        <div id="splash-progress-bar" class="progress-bar-inner"></div>
+                    </div>
+                </div>
+
+                <button id="btn-mulai-utama" class="btn-mulai-lab" onclick="klikTombolMulai()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M8 5v14l11-7z"/>
+                    </svg>
+                    MULAI
+                </button>
+            </div>
+        </section>
+
+        <!-- ==================================================================
+             HEADER & 5 TAB NAVIGASI UTAMA
+             ================================================================== -->
+        <header>
+            <div class="brand-left">
+                <div class="garuda-badge">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.4">
+                        <path d="M12 2L15 8L22 9L17 14L18 21L12 18L6 21L7 14L2 9L9 8L12 2Z"/>
+                    </svg>
+                </div>
+                <div class="brand-titles">
+                    <h1>LAB MAYA PANCASILA • KELAS 5</h1>
+                    <div class="murid-chip-header" id="header-murid-info">Murid: Belum diisi | Absen: -</div>
+                </div>
+            </div>
+
+            <nav class="nav-tabs-bar" role="tablist">
+                <button class="tab-trigger active" id="tab-teori" onclick="bukaTabUtama('teori')">Teori</button>
+                <button class="tab-trigger" id="tab-prosedur" onclick="bukaTabUtama('prosedur')">Prosedur</button>
+                <button class="tab-trigger" id="tab-simulasi" onclick="bukaTabUtama('simulasi')">Simulasi</button>
+                <button class="tab-trigger" id="tab-lkpd" onclick="bukaTabUtama('lkpd')">LKPD</button>
+                <button class="tab-trigger" id="tab-pengembang" onclick="bukaTabUtama('pengembang')">Pengembang</button>
+            </nav>
+
+            <div class="header-right-tools">
+                <button class="hdr-btn reset-top" onclick="konfirmasiResetSemua()" title="Reset Seluruh Aktivitas">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+                    </svg>
+                    <span>Reset</span>
+                </button>
+                <button class="hdr-btn" id="btn-mute-suara" onclick="toggleSuaraLab()" title="Mute / Unmute Efek Suara">
+                    <svg id="ico-vol-aktif" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
+                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+                        <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/>
+                    </svg>
+                    <svg id="ico-vol-mati" style="display:none;" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#F87171" stroke-width="2.4">
+                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+                        <line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/>
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- ==================================================================
+             MAIN VIEWPORT
+             ================================================================== -->
+        <main>
+            <!-- ==================== TAB 1: TEORI ==================== -->
+            <section id="pane-teori" class="tab-content-pane active">
+                <div class="sub-pill-nav">
+                    <button class="pill-btn active" id="pill-jenis-norma" onclick="pilihSubTeori('jenis')">1. Jenis-Jenis Norma</button>
+                    <button class="pill-btn" id="pill-lingkungan-norma" onclick="pilihSubTeori('lingkungan')">2. Penerapan di Keluarga, Masyarakat &amp; Sekolah</button>
+                </div>
+
+                <!-- Sub-Teori 1: 4 Jenis Norma -->
+                <div id="teori-sub-jenis" class="teori-split-grid">
+                    <div class="teori-visual-card">
+                        <h3>Empat Jenis Norma dalam Kehidupan</h3>
+                        <svg width="230" height="185" viewBox="0 0 250 200">
+                            <rect x="14" y="16" width="104" height="76" rx="12" fill="#FEF3C7" stroke="#D97706" stroke-width="2"/>
+                            <text x="66" y="42" font-size="11" font-weight="bold" fill="#92400E" text-anchor="middle">Norma Agama</text>
+                            <text x="66" y="58" font-size="9.5" fill="#334155" text-anchor="middle">Kitab Suci / Tuhan</text>
+                            <text x="66" y="74" font-size="9" fill="#B45309" text-anchor="middle">Sanksi: Dosa / Batin</text>
+
+                            <rect x="132" y="16" width="104" height="76" rx="12" fill="#EDE9FE" stroke="#7C3AED" stroke-width="2"/>
+                            <text x="184" y="42" font-size="11" font-weight="bold" fill="#5B21B6" text-anchor="middle">Kesusilaan</text>
+                            <text x="184" y="58" font-size="9.5" fill="#334155" text-anchor="middle">Suara Hati / Jujur</text>
+                            <text x="184" y="74" font-size="9" fill="#6D28D9" text-anchor="middle">Sanksi: Menyesal</text>
+
+                            <rect x="14" y="108" width="104" height="76" rx="12" fill="#E0F2FE" stroke="#0284C7" stroke-width="2"/>
+                            <text x="66" y="134" font-size="11" font-weight="bold" fill="#0369A1" text-anchor="middle">Kesopanan</text>
+                            <text x="66" y="150" font-size="9.5" fill="#334155" text-anchor="middle">Tata Krama / Adat</text>
+                            <text x="66" y="166" font-size="9" fill="#0369A1" text-anchor="middle">Sanksi: Ditegur/Cemooh</text>
+
+                            <rect x="132" y="108" width="104" height="76" rx="12" fill="#FEE2E2" stroke="#DC2626" stroke-width="2"/>
+                            <text x="184" y="134" font-size="11" font-weight="bold" fill="#991B1B" text-anchor="middle">Norma Hukum</text>
+                            <text x="184" y="150" font-size="9.5" fill="#334155" text-anchor="middle">Aturan Negara Tegas</text>
+                            <text x="184" y="166" font-size="9" fill="#B91C1C" text-anchor="middle">Sanksi: Denda/Penjara</text>
+                        </svg>
+                        <p style="font-size:0.74rem; color:#475569;">Klik kartu norma di sebelah kanan untuk menyorotnya.</p>
+                    </div>
+
+                    <div class="teori-list-panel" id="cards-jenis-norma">
+                        <div class="norm-card" style="border-left-color:#D97706;" onclick="sorotKartuNorma(this)">
+                            <h4>1. Norma Agama</h4>
+                            <p>Aturan hidup yang bersumber dari ajaran agama dan kepercayaan kepada Tuhan Yang Maha Esa. Contoh: beribadah sesuai keyakinan, menghormati pemeluk agama lain, dan berdoa sebelum belajar. Sanksinya berupa dosa atau teguran batin.</p>
+                        </div>
+                        <div class="norm-card" style="border-left-color:#7C3AED;" onclick="sorotKartuNorma(this)">
+                            <h4>2. Norma Kesusilaan</h4>
+                            <p>Aturan yang berasal dari hati nurani manusia tentang baik dan buruk. Contoh: berkata jujur saat ulangan, tidak mencuri barang teman, dan mengakui kesalahan. Pelanggarnya merasa bersalah dan menyesal.</p>
+                        </div>
+                        <div class="norm-card" style="border-left-color:#0284C7;" onclick="sorotKartuNorma(this)">
+                            <h4>3. Norma Kesopanan</h4>
+                            <p>Aturan pergaulan yang tumbuh dari kebiasaan dan tata krama masyarakat. Contoh: berbicara santun kepada orang tua dan guru, mengetuk pintu sebelum masuk, serta memakai pakaian rapi. Sanksinya berupa teguran atau dikucilkan.</p>
+                        </div>
+                        <div class="norm-card" style="border-left-color:#DC2626;" onclick="sorotKartuNorma(this)">
+                            <h4>4. Norma Hukum</h4>
+                            <p>Aturan resmi yang dibuat oleh lembaga negara yang berwenang dan bersifat memaksa/mengikat semua warga. Contoh: memakai helm saat boncengan sepeda motor, mematuhi rambu lalu lintas, dan menjaga ketertiban umum. Sanksinya tegas seperti denda atau hukuman penjara.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sub-Teori 2: Penerapan di 3 Lingkungan -->
+                <div id="teori-sub-lingkungan" class="teori-split-grid" style="display:none;">
+                    <div class="teori-visual-card">
+                        <h3>Tiga Lingkungan Penerapan Norma</h3>
+                        <svg width="230" height="185" viewBox="0 0 250 200">
+                            <!-- Rumah (Keluarga) -->
+                            <polygon points="62,24 26,56 98,56" fill="#F59E0B" stroke="#B45309" stroke-width="2"/>
+                            <rect x="34" y="56" width="56" height="36" fill="#FEF3C7" stroke="#D97706" stroke-width="2"/>
+                            <text x="62" y="106" font-size="10.5" font-weight="bold" fill="#92400E" text-anchor="middle">Keluarga</text>
+
+                            <!-- Sekolah -->
+                            <rect x="148" y="34" width="76" height="58" rx="4" fill="#DCFCE7" stroke="#059669" stroke-width="2"/>
+                            <polygon points="142,34 186,16 230,34" fill="#10B981"/>
+                            <text x="186" y="106" font-size="10.5" font-weight="bold" fill="#065F46" text-anchor="middle">Sekolah</text>
+
+                            <!-- Masyarakat -->
+                            <circle cx="125" cy="148" r="32" fill="#E0F2FE" stroke="#0284C7" stroke-width="2"/>
+                            <text x="125" y="152" font-size="10.5" font-weight="bold" fill="#0369A1" text-anchor="middle">Masyarakat</text>
+                        </svg>
+                        <p style="font-size:0.74rem; color:#475569;">Aturan di tiap lingkungan membantu tercipta kerukunan dan ketertiban.</p>
+                    </div>
+
+                    <div class="teori-list-panel">
+                        <div class="norm-card" style="border-left-color:#D97706;" onclick="sorotKartuNorma(this)">
+                            <h4>Di Lingkungan Keluarga</h4>
+                            <p>Membantu orang tua merapikan tempat tidur, berpamitan sebelum berangkat ke SD Negeri Nyanglan, makan bersama dengan tertib, dan menyayangi kakak/adik.</p>
+                        </div>
+                        <div class="norm-card" style="border-left-color:#059669;" onclick="sorotKartuNorma(this)">
+                            <h4>Di Lingkungan Sekolah</h4>
+                            <p>Datang tepat waktu sebelum bel berbunyi, mengikuti upacara bendera dengan khidmat, mengerjakan piket kelas, serta mendengarkan saat guru menjelaskan.</p>
+                        </div>
+                        <div class="norm-card" style="border-left-color:#0284C7;" onclick="sorotKartuNorma(this)">
+                            <h4>Di Lingkungan Masyarakat</h4>
+                            <p>Membuang sampah pada tempatnya, mengikuti kerja bakti lingkungan desa, menjaga ketenangan saat malam hari, dan menghormati tetangga.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== TAB 2: PROSEDUR ==================== -->
+            <section id="pane-prosedur" class="tab-content-pane">
+                <div class="prosedur-panel">
+                    <h2 class="prosedur-heading">Petunjuk Penggunaan Lab Maya Pendidikan Pancasila Kelas 5</h2>
+
+                    <div class="proc-cards-grid">
+                        <div class="proc-step-box">
+                            <div class="step-circle">1</div>
+                            <div>
+                                <h4>Isi Identitas &amp; Mulai di Layar Awal</h4>
+                                <p>Tuliskan <strong>Nama Lengkap Murid</strong> dan <strong>No. Absen</strong> pada tampilan awal setelah indikator loading mencapai 100%, lalu tekan tombol <strong>MULAI</strong>.</p>
+                            </div>
+                        </div>
+
+                        <div class="proc-step-box">
+                            <div class="step-circle">2</div>
+                            <div>
+                                <h4>Pahami Materi pada Tab Teori</h4>
+                                <p>Pelajari 4 jenis norma (Agama, Kesusilaan, Kesopanan, Hukum) serta penerapan norma di lingkungan keluarga, masyarakat, dan sekolah.</p>
+                            </div>
+                        </div>
+
+                        <div class="proc-step-box">
+                            <div class="step-circle">3</div>
+                            <div>
+                                <h4>Bermain &amp; Uji Perilaku di Tab Simulasi</h4>
+                                <p>Klik kartu contoh perilaku sehari-hari lalu klik kotak lingkungan <strong>Keluarga</strong>, <strong>Masyarakat</strong>, atau <strong>Sekolah</strong>. Tekan <strong>Periksa Simulasi</strong> untuk melihat hasil.</p>
+                            </div>
+                        </div>
+
+                        <div class="proc-step-box">
+                            <div class="step-circle">4</div>
+                            <div>
+                                <h4>Kerjakan 15 Soal Isian di Tab LKPD</h4>
+                                <p>Isi 15 soal isian singkat tentang jenis-jenis norma dan penerapannya, lalu klik <strong>Periksa Jawaban</strong> untuk melihat skor dan pembahasan singkat per soal.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="proc-footer-note">
+                        Tips: Tekan tombol <strong>Reset</strong> pada simulasi, LKPD, atau header kapan saja jika ingin mengulang latihan dari awal.
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== TAB 3: SIMULASI PENERAPAN NORMA ==================== -->
+            <section id="pane-simulasi" class="tab-content-pane">
+                <div class="sim-main-card">
+                    <div class="sim-top-info">
+                        <h3>Simulasi Penerapan Norma: Keluarga, Masyarakat &amp; Sekolah</h3>
+                        <span class="sim-status-pill">Benar: <span id="sim-benar-count">0</span> / 9</span>
+                    </div>
+
+                    <div style="font-size:0.76rem; font-weight:800; color:#334155; margin-bottom:4px; flex-shrink:0;">
+                        1. Klik salah satu kartu perilaku di bawah ini, lalu klik kotak lingkungan yang sesuai (atau klik item di kotak untuk mengembalikannya):
+                    </div>
+                    <div class="behavior-pool" id="sim-behavior-pool"></div>
+
+                    <div class="env-buckets-3col">
+                        <!-- Lingkungan Keluarga -->
+                        <div class="env-bucket keluarga" onclick="tempatkanKeLingkungan('keluarga')">
+                            <div class="env-bucket-head" style="color:#92400E;">
+                                <span>🏠 KELUARGA</span>
+                                <span id="cnt-keluarga">0</span>
+                            </div>
+                            <div class="env-bucket-items" id="bucket-keluarga"></div>
+                        </div>
+
+                        <!-- Lingkungan Masyarakat -->
+                        <div class="env-bucket masyarakat" onclick="tempatkanKeLingkungan('masyarakat')">
+                            <div class="env-bucket-head" style="color:#0369A1;">
+                                <span>🏘️ MASYARAKAT</span>
+                                <span id="cnt-masyarakat">0</span>
+                            </div>
+                            <div class="env-bucket-items" id="bucket-masyarakat"></div>
+                        </div>
+
+                        <!-- Lingkungan Sekolah -->
+                        <div class="env-bucket sekolah" onclick="tempatkanKeLingkungan('sekolah')">
+                            <div class="env-bucket-head" style="color:#065F46;">
+                                <span>🏫 SEKOLAH</span>
+                                <span id="cnt-sekolah">0</span>
+                            </div>
+                            <div class="env-bucket-items" id="bucket-sekolah"></div>
+                        </div>
+                    </div>
+
+                    <div class="sim-bottom-bar">
+                        <div class="sim-feedback-line" id="sim-feedback-text">Pilih kartu perilaku, lalu klik kotak Keluarga, Masyarakat, atau Sekolah.</div>
+                        <button class="btn-ui btn-ui-gray" onclick="resetSimulasiNorma()">Reset Simulasi</button>
+                        <button class="btn-ui btn-ui-green" onclick="periksaSimulasiNorma()">Periksa Simulasi</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== TAB 4: LKPD (15 SOAL ISIAN) ==================== -->
+            <section id="pane-lkpd" class="tab-content-pane">
+                <div class="lkpd-main-sheet">
+                    <div class="lkpd-top-identity">
+                        <div class="id-inputs-wrap">
+                            <input type="text" id="lkpd-nama-input" class="id-input-box" placeholder="Nama Murid..." autocomplete="off" oninput="sinkronDariLKPD()">
+                            <input type="text" id="lkpd-absen-input" class="id-input-box" style="width:110px;" placeholder="No. Absen..." autocomplete="off" oninput="sinkronDariLKPD()">
+                            <span style="font-size:0.75rem; font-weight:800; color:#475569;">Kelas 5 • SD Negeri Nyanglan</span>
+                        </div>
+
+                        <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+                            <div class="lkpd-nilai-box">Nilai: <span id="lkpd-nilai-angka">0</span> / 100</div>
+                            <button class="btn-ui btn-ui-gray" onclick="resetLKPD15()">Reset LKPD</button>
+                            <button class="btn-ui btn-ui-green" onclick="periksaLKPD15()">Periksa Jawaban</button>
+                        </div>
+                    </div>
+
+                    <div class="lkpd-15-grid" id="lkpd-15-list"></div>
+                </div>
+            </section>
+
+            <!-- ==================== TAB 5: PENGEMBANG ==================== -->
+            <section id="pane-pengembang" class="tab-content-pane">
+                <div class="pengembang-card">
+                    <div class="pengembang-avatar">WA</div>
+                    <div>
+                        <h2 style="font-family:var(--font-head); font-size:1.32rem; font-weight:900; color:#0F172A;">
+                            I Wayan Wija Astawa, S.Pd.
+                        </h2>
+                        <p style="font-size:0.88rem; font-weight:800; color:var(--red-pancasila); margin-top:2px;">
+                            Pengembang Lab Maya Pendidikan Pancasila • SD Negeri Nyanglan
+                        </p>
+                        <span style="display:inline-block; background:#FEF3C7; color:#92400E; font-weight:800; font-size:0.78rem; padding:4px 14px; border-radius:999px; margin-top:5px;">
+                            Jenjang Kelas 5 (Fase C) • Kurikulum Merdeka
+                        </span>
+                    </div>
+
+                    <div class="pengembang-grid">
+                        <div class="pengembang-box">
+                            <h4>Fokus Capaian Pembelajaran</h4>
+                            <p>Membantu murid kelas 5 SD (Fase C) mengenal dan membedakan jenis-jenis norma serta menerapkan aturan dan norma secara bertanggung jawab di lingkungan keluarga, masyarakat, dan sekolah.</p>
+                        </div>
+                        <div class="pengembang-box">
+                            <h4>Satuan Pendidikan</h4>
+                            <p><strong>SD Negeri Nyanglan</strong> — Media pembelajaran mandiri (offline) berbasis HTML5, CSS, dan Web Audio API yang responsif untuk HP murid maupun tampilan kelas 16:9.</p>
+                        </div>
+                    </div>
+
+                    <div class="pengembang-nav-actions">
+                        <button class="btn-ui btn-ui-green" onclick="bukaTabUtama('simulasi')">Ke Simulasi Norma</button>
+                        <button class="btn-ui" style="background:#2563EB; color:#FFFFFF;" onclick="bukaTabUtama('lkpd')">Ke LKPD (15 Soal)</button>
+                        <button class="btn-ui btn-ui-gray" onclick="bukaSplashKembali()">Ubah Identitas / Splash</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- ==================================================================
+             CUSTOM MODAL DIALOG (PENGGANTI alert() & confirm())
+             ================================================================== -->
+        <div id="custom-dialog-modal" class="modal-backdrop-custom">
+            <div class="modal-box-custom">
+                <h3 id="c-modal-title">Informasi</h3>
+                <p id="c-modal-desc">Pesan</p>
+                <div class="modal-btn-row" id="c-modal-actions"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================================================================
+         JAVASCRIPT LOGIC & WEB AUDIO API SYNTHESIZER (100% OFFLINE)
+         ====================================================================== -->
+    <script>
+        /* ------------------------------------------------------------------
+           1. WEB AUDIO API SYNTHESIZER (EFEK SUARA SINTETIS TANPA FILE LUAR)
+           ------------------------------------------------------------------ */
+        let audioCtx = null;
+        let suaraAktif = true;
+
+        function siapkanAudio() {
+            if (!audioCtx) {
+                const AudioClass = window.AudioContext || window.webkitAudioContext;
+                if (AudioClass) {
+                    audioCtx = new AudioClass();
+                }
+            }
+            if (audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        function bunyiNada(frek, gelombang, durasi, gainMax) {
+            if (!suaraAktif) return;
+            try {
+                siapkanAudio();
+                if (!audioCtx) return;
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = gelombang;
+                osc.frequency.setValueAtTime(frek, audioCtx.currentTime);
+                gain.gain.setValueAtTime(gainMax, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + durasi);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + durasi);
+            } catch (e) {
+                // Abaikan jika browser membatasi audio sebelum interaksi user
+            }
+        }
+
+        function sfxLoading(persen) { bunyiNada(290 + persen * 3.4, 'sine', 0.045, 0.03); }
+        function sfxKlik() { bunyiNada(620, 'sine', 0.075, 0.09); }
+        function sfxPindahTab() {
+            bunyiNada(480, 'triangle', 0.065, 0.08);
+            setTimeout(() => bunyiNada(660, 'triangle', 0.085, 0.08), 50);
+        }
+        function sfxBenar() {
+            [523.25, 659.25, 783.99, 1046.50].forEach((n, idx) => {
+                setTimeout(() => bunyiNada(n, 'triangle', 0.17, 0.12), idx * 80);
+            });
+        }
+        function sfxSalah() {
+            bunyiNada(230, 'sawtooth', 0.13, 0.085);
+            setTimeout(() => bunyiNada(180, 'sawtooth', 0.18, 0.085), 105);
+        }
+        function sfxResetBunyi() {
+            bunyiNada(430, 'triangle', 0.09, 0.09);
+            setTimeout(() => bunyiNada(320, 'triangle', 0.11, 0.09), 70);
+            setTimeout(() => bunyiNada(230, 'triangle', 0.14, 0.09), 140);
+        }
+
+        function toggleSuaraLab() {
+            suaraAktif = !suaraAktif;
+            document.getElementById('ico-vol-aktif').style.display = suaraAktif ? 'block' : 'none';
+            document.getElementById('ico-vol-mati').style.display = suaraAktif ? 'none' : 'block';
+            if (suaraAktif) {
+                siapkanAudio();
+                sfxKlik();
+            }
+        }
+
+        /* ------------------------------------------------------------------
+           2. CUSTOM DIALOG HELPER (PENGGANTI alert() & confirm())
+           ------------------------------------------------------------------ */
+        function tampilkanDialog(judul, isiHtml, daftarTombol) {
+            document.getElementById('c-modal-title').textContent = judul;
+            document.getElementById('c-modal-desc').innerHTML = isiHtml;
+            const box = document.getElementById('c-modal-actions');
+            box.innerHTML = '';
+
+            daftarTombol.forEach(t => {
+                const btn = document.createElement('button');
+                btn.className = 'btn-ui';
+                btn.style.background = t.bg || '#E2E8F0';
+                btn.style.color = t.color || '#0F172A';
+                btn.textContent = t.label;
+                btn.onclick = () => {
+                    document.getElementById('custom-dialog-modal').classList.remove('show');
+                    if (t.onClick) t.onClick();
+                };
+                box.appendChild(btn);
+            });
+
+            document.getElementById('custom-dialog-modal').classList.add('show');
+        }
+
+        /* ------------------------------------------------------------------
+           3. IDENTITAS MURID & SPLASH SCREEN LOADING (0% - 100%)
+           ------------------------------------------------------------------ */
+        let namaMuridAktif = '';
+        let absenMuridAktif = '';
+
+        function perbaruiHeaderMurid() {
+            const labelNama = namaMuridAktif.trim() ? namaMuridAktif.trim() : 'Belum diisi';
+            const labelAbsen = absenMuridAktif.trim() ? absenMuridAktif.trim() : '-';
+            document.getElementById('header-murid-info').textContent = `Murid: ${labelNama} | Absen: ${labelAbsen}`;
+        }
+
+        function sinkronIdentitasDariSplash() {
+            namaMuridAktif = document.getElementById('splash-nama-murid').value;
+            absenMuridAktif = document.getElementById('splash-no-absen').value;
+            document.getElementById('lkpd-nama-input').value = namaMuridAktif;
+            document.getElementById('lkpd-absen-input').value = absenMuridAktif;
+            perbaruiHeaderMurid();
+            if (namaMuridAktif.trim() && absenMuridAktif.trim()) {
+                document.getElementById('splash-warn').textContent = '';
+            }
+        }
+
+        function sinkronDariLKPD() {
+            namaMuridAktif = document.getElementById('lkpd-nama-input').value;
+            absenMuridAktif = document.getElementById('lkpd-absen-input').value;
+            document.getElementById('splash-nama-murid').value = namaMuridAktif;
+            document.getElementById('splash-no-absen').value = absenMuridAktif;
+            perbaruiHeaderMurid();
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            resetSimulasiNorma(false);
+            renderLKPD15();
+            perbaruiHeaderMurid();
+
+            let pct = 0;
+            const bar = document.getElementById('splash-progress-bar');
+            const pctText = document.getElementById('splash-pct-text');
+            const loadBox = document.getElementById('splash-loading-box');
+            const btnMulai = document.getElementById('btn-mulai-utama');
+
+            const timer = setInterval(() => {
+                pct += Math.floor(Math.random() * 15) + 9;
+                if (pct >= 100) {
+                    pct = 100;
+                    clearInterval(timer);
+                    bar.style.width = '100%';
+                    pctText.textContent = '100%';
+                    bunyiNada(880, 'sine', 0.14, 0.08);
+                    setTimeout(() => {
+                        loadBox.style.display = 'none';
+                        btnMulai.style.display = 'flex';
+                    }, 250);
+                } else {
+                    bar.style.width = pct + '%';
+                    pctText.textContent = pct + '%';
+                    sfxLoading(pct);
+                }
+            }, 90);
+        });
+
+        function klikTombolMulai() {
+            siapkanAudio();
+            sinkronIdentitasDariSplash();
+
+            if (!namaMuridAktif.trim() || !absenMuridAktif.trim()) {
+                sfxSalah();
+                document.getElementById('splash-warn').textContent = 'Silakan tulis Nama Lengkap Murid dan No. Absen terlebih dahulu sebelum menekan MULAI!';
+                if (!namaMuridAktif.trim()) {
+                    document.getElementById('splash-nama-murid').focus();
+                } else {
+                    document.getElementById('splash-no-absen').focus();
+                }
+                return;
+            }
+
+            sfxBenar();
+            document.getElementById('splash-overlay').style.display = 'none';
+        }
+
+        function bukaSplashKembali() {
+            sfxKlik();
+            document.getElementById('splash-overlay').style.display = 'flex';
+            document.getElementById('splash-loading-box').style.display = 'none';
+            document.getElementById('btn-mulai-utama').style.display = 'flex';
+        }
+
+        /* ------------------------------------------------------------------
+           4. NAVIGASI 5 TAB UTAMA & SUB-TEORI
+           ------------------------------------------------------------------ */
+        function bukaTabUtama(namaTab) {
+            sfxPindahTab();
+            document.querySelectorAll('.tab-trigger').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content-pane').forEach(p => p.classList.remove('active'));
+
+            document.getElementById('tab-' + namaTab).classList.add('active');
+            document.getElementById('pane-' + namaTab).classList.add('active');
+        }
+
+        function pilihSubTeori(sub) {
+            sfxKlik();
+            const jenisBtn = document.getElementById('pill-jenis-norma');
+            const lingBtn = document.getElementById('pill-lingkungan-norma');
+            const jenisPane = document.getElementById('teori-sub-jenis');
+            const lingPane = document.getElementById('teori-sub-lingkungan');
+
+            if (sub === 'jenis') {
+                jenisBtn.classList.add('active');
+                lingBtn.classList.remove('active');
+                jenisPane.style.display = 'grid';
+                lingPane.style.display = 'none';
+            } else {
+                lingBtn.classList.add('active');
+                jenisBtn.classList.remove('active');
+                lingPane.style.display = 'grid';
+                jenisPane.style.display = 'none';
+            }
+        }
+
+        function sorotKartuNorma(el) {
+            sfxKlik();
+            document.querySelectorAll('.norm-card').forEach(c => c.classList.remove('highlighted'));
+            el.classList.add('highlighted');
+        }
+
+        /* ------------------------------------------------------------------
+           5. SIMULASI PENERAPAN NORMA (KELUARGA, MASYARAKAT, SEKOLAH)
+           ------------------------------------------------------------------ */
+        const dataPerilakuSimulasi = [
+            { id: 'b1', teks: 'Merapikan tempat tidur sendiri', ling: 'keluarga' },
+            { id: 'b2', teks: 'Berpamitan & mencium tangan ortu', ling: 'keluarga' },
+            { id: 'b3', teks: 'Membantu adik belajar di rumah', ling: 'keluarga' },
+            { id: 'b4', teks: 'Ikut kerja bakti membersihkan jalan desa', ling: 'masyarakat' },
+            { id: 'b5', teks: 'Membuang sampah pada tempatnya', ling: 'masyarakat' },
+            { id: 'b6', teks: 'Menjaga ketenangan saat malam hari', ling: 'masyarakat' },
+            { id: 'b7', teks: 'Datang tepat waktu sebelum bel masuk', ling: 'sekolah' },
+            { id: 'b8', teks: 'Melaksanakan piket kelas bersama', ling: 'sekolah' },
+            { id: 'b9', teks: 'Mengikuti upacara bendera tertib', ling: 'sekolah' }
+        ];
+
+        let perilakuTerpilihId = null;
+
+        function resetSimulasiNorma(bunyi = true) {
+            if (bunyi) sfxResetBunyi();
+            perilakuTerpilihId = null;
+            document.getElementById('sim-benar-count').textContent = '0';
+
+            const pool = document.getElementById('sim-behavior-pool');
+            pool.innerHTML = '';
+            ['keluarga', 'masyarakat', 'sekolah'].forEach(k => {
+                document.getElementById('bucket-' + k).innerHTML = '';
+            });
+
+            const acak = [...dataPerilakuSimulasi].sort(() => Math.random() - 0.5);
+            acak.forEach(item => {
+                const chip = document.createElement('button');
+                chip.className = 'behavior-chip';
+                chip.id = 'beh-chip-' + item.id;
+                chip.textContent = item.teks;
+                chip.onclick = (e) => {
+                    e.stopPropagation();
+                    sfxKlik();
+                    // Jika sudah berada di kotak lingkungan, klik lagi mengembalikan ke pool
+                    if (chip.parentElement.id !== 'sim-behavior-pool') {
+                        chip.classList.remove('active-pick');
+                        chip.style.borderColor = '#2563EB';
+                        chip.style.background = '#FFFFFF';
+                        pool.appendChild(chip);
+                        perilakuTerpilihId = null;
+                        perbaruiJumlahKotakSim();
+                        return;
+                    }
+                    document.querySelectorAll('.behavior-chip').forEach(c => c.classList.remove('active-pick'));
+                    chip.classList.add('active-pick');
+                    perilakuTerpilihId = item.id;
+                };
+                pool.appendChild(chip);
+            });
+
+            perbaruiJumlahKotakSim();
+            const fb = document.getElementById('sim-feedback-text');
+            fb.className = 'sim-feedback-line';
+            fb.textContent = 'Pilih kartu perilaku, lalu klik kotak Keluarga, Masyarakat, atau Sekolah.';
+        }
+
+        function tempatkanKeLingkungan(targetLing) {
+            if (!perilakuTerpilihId) return;
+            const chip = document.getElementById('beh-chip-' + perilakuTerpilihId);
+            if (!chip) return;
+
+            sfxKlik();
+            chip.classList.remove('active-pick');
+            chip.style.borderColor = '#2563EB';
+            chip.style.background = '#FFFFFF';
+            document.getElementById('bucket-' + targetLing).appendChild(chip);
+            perilakuTerpilihId = null;
+            perbaruiJumlahKotakSim();
+        }
+
+        function perbaruiJumlahKotakSim() {
+            ['keluarga', 'masyarakat', 'sekolah'].forEach(k => {
+                const jml = document.getElementById('bucket-' + k).children.length;
+                document.getElementById('cnt-' + k).textContent = jml;
+            });
+        }
+
+        function periksaSimulasiNorma() {
+            let benar = 0;
+            dataPerilakuSimulasi.forEach(item => {
+                const chip = document.getElementById('beh-chip-' + item.id);
+                const parentId = chip.parentElement.id;
+                if (parentId === 'bucket-' + item.ling) {
+                    benar++;
+                    chip.style.borderColor = '#059669';
+                    chip.style.background = '#DCFCE7';
+                } else {
+                    chip.style.borderColor = '#DC2626';
+                    chip.style.background = '#FEE2E2';
+                }
+            });
+
+            document.getElementById('sim-benar-count').textContent = benar;
+            const fb = document.getElementById('sim-feedback-text');
+
+            if (benar === dataPerilakuSimulasi.length) {
+                sfxBenar();
+                fb.className = 'sim-feedback-line sukses';
+                fb.textContent = 'Hebat sekali! Semua 9 contoh perilaku ditempatkan sesuai lingkungannya!';
+            } else {
+                sfxSalah();
+                fb.className = 'sim-feedback-line gagal';
+                fb.textContent = `Benar ${benar} dari 9 perilaku. Periksa kartu merah atau klik kartu di kotak untuk mengembalikannya.`;
+            }
+        }
+
+        /* ------------------------------------------------------------------
+           6. TAB 4: LKPD (15 SOAL ISIAN SINGKAT, SKOR SKALA 100)
+           ------------------------------------------------------------------ */
+        const bank15SoalLKPD = [
+            // 1 - 5: Jenis-Jenis Norma
+            { no: 1, topik: 'Jenis Norma', tanya: 'Aturan hidup yang bersumber dari kitab suci dan perintah Tuhan disebut norma ...', terima: ['agama'], kunci: 'Agama', bahas: 'Norma agama berasal dari ajaran agama & kepercayaan.' },
+            { no: 2, topik: 'Jenis Norma', tanya: 'Aturan yang berasal dari suara hati nurani untuk berbuat jujur disebut norma ...', terima: ['kesusilaan'], kunci: 'Kesusilaan', bahas: 'Norma kesusilaan berkaitan dengan hati nurani & kejujuran.' },
+            { no: 3, topik: 'Jenis Norma', tanya: 'Aturan pergaulan dan tata krama yang berlaku di masyarakat disebut norma ...', terima: ['kesopanan'], kunci: 'Kesopanan', bahas: 'Norma kesopanan mengatur tata krama & sopan santun.' },
+            { no: 4, topik: 'Jenis Norma', tanya: 'Aturan resmi dari negara yang bersifat memaksa dan bersanksi tegas disebut norma ...', terima: ['hukum'], kunci: 'Hukum', bahas: 'Norma hukum ditetapkan negara & memiliki sanksi tegas.' },
+            { no: 5, topik: 'Jenis Norma', tanya: 'Perasaan bersalah dan menyesal di dalam hati adalah contoh sanksi norma ...', terima: ['kesusilaan'], kunci: 'Kesusilaan', bahas: 'Pelanggaran hati nurani menimbulkan rasa menyesal.' },
+
+            // 6 - 9: Lingkungan Keluarga
+            { no: 6, topik: 'Keluarga', tanya: 'Sebelum berangkat ke sekolah, kita sebaiknya berpamitan kepada ...', terima: ['orang tua', 'ayah ibu', 'ayah dan ibu', 'ortu', 'orangtua'], kunci: 'Orang tua', bahas: 'Berpamitan tanda hormat & sopan santun di keluarga.' },
+            { no: 7, topik: 'Keluarga', tanya: 'Bangun tidur pagi di rumah, aturan yang baik adalah ... tempat tidur sendiri.', terima: ['merapikan', 'membereskan', 'merapihkan'], kunci: 'Merapikan', bahas: 'Merapikan kamar melatih tanggung jawab di rumah.' },
+            { no: 8, topik: 'Keluarga', tanya: 'Saat makan bersama keluarga di rumah, sikap kita sebaiknya ...', terima: ['tertib', 'sopan', 'berdoa'], kunci: 'Tertib / Berdoa', bahas: 'Berdoa dan makan tertib menjaga keharmonisan keluarga.' },
+            { no: 9, topik: 'Keluarga', tanya: 'Terhadap kakak atau adik di rumah, kita harus saling ... dan rukun.', terima: ['menyayangi', 'sayang', 'membantu', 'menghargai'], kunci: 'Menyayangi', bahas: 'Kerukunan antaranggota keluarga membuat rumah nyaman.' },
+
+            // 10 - 12: Lingkungan Masyarakat
+            { no: 10, topik: 'Masyarakat', tanya: 'Kegiatan membersihkan lingkungan desa bersama warga sekitar disebut kerja ...', terima: ['bakti'], kunci: 'Bakti', bahas: 'Kerja bakti memperkuat gotong royong di masyarakat.' },
+            { no: 11, topik: 'Masyarakat', tanya: 'Membuang sampah di masyarakat harus pada ... agar tidak banjir.', terima: ['tempatnya', 'tempat sampah'], kunci: 'Tempatnya', bahas: 'Membuang sampah pada tempatnya menjaga kebersihan lingkungan.' },
+            { no: 12, topik: 'Masyarakat', tanya: 'Berkendara sepeda motor di jalan raya wajib mematuhi norma ...', terima: ['hukum'], kunci: 'Hukum', bahas: 'Aturan lalu lintas termasuk norma hukum.' },
+
+            // 13 - 15: Lingkungan Sekolah
+            { no: 13, topik: 'Sekolah', tanya: 'Agar tidak terlambat masuk kelas di sekolah, kita harus datang tepat ...', terima: ['waktu'], kunci: 'Waktu', bahas: 'Disiplin waktu melatih tanggung jawab siswa di sekolah.' },
+            { no: 14, topik: 'Sekolah', tanya: 'Membersihkan ruang kelas sesuai jadwal merupakan tugas ... kelas.', terima: ['piket'], kunci: 'Piket', bahas: 'Piket kelas membiasakan kerja sama & kebersihan sekolah.' },
+            { no: 15, topik: 'Sekolah', tanya: 'Saat bapak atau ibu guru sedang menerangkan pelajaran, sikap kita adalah ...', terima: ['mendengarkan', 'memperhatikan', 'menyimak'], kunci: 'Mendengarkan / Memperhatikan', bahas: 'Menyimak guru menunjukkan sikap hormat di sekolah.' }
+        ];
+
+        function bersihkanTeks(teks) {
+            return teks
+                .toLowerCase()
+                .replace(/[^a-z0-9\s]/g, ' ')
+                .replace(/\s+/g, ' ')
+                .trim();
+        }
+
+        function renderLKPD15() {
+            const container = document.getElementById('lkpd-15-list');
+            container.innerHTML = '';
+
+            bank15SoalLKPD.forEach(s => {
+                const div = document.createElement('div');
+                div.className = 'lkpd-soal-box';
+                div.id = 'lkpd-card-' + s.no;
+                div.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <span class="lkpd-topik-label">No. ${s.no} • ${s.topik}</span>
+                        <span class="lkpd-hasil-singkat" id="lkpd-res-${s.no}"></span>
+                    </div>
+                    <div class="lkpd-teks-soal">${s.no}. ${s.tanya}</div>
+                    <input type="text" class="lkpd-jawab-input" id="lkpd-in-${s.no}" placeholder="Ketik jawaban..." autocomplete="off">
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function periksaLKPD15() {
+            siapkanAudio();
+            let jmlBenar = 0;
+
+            bank15SoalLKPD.forEach(s => {
+                const card = document.getElementById('lkpd-card-' + s.no);
+                const input = document.getElementById('lkpd-in-' + s.no);
+                const res = document.getElementById('lkpd-res-' + s.no);
+                const jawabBersih = bersihkanTeks(input.value);
+
+                const tepat = jawabBersih !== '' && s.terima.some(k => {
+                    const kBersih = bersihkanTeks(k);
+                    return jawabBersih === kBersih || (kBersih.length >= 4 && jawabBersih.includes(kBersih));
+                });
+
+                res.style.display = 'block';
+                if (tepat) {
+                    jmlBenar++;
+                    card.className = 'lkpd-soal-box betul';
+                    res.style.color = '#059669';
+                    res.textContent = 'Benar! ' + s.bahas;
+                } else {
+                    card.className = 'lkpd-soal-box keliru';
+                    res.style.color = '#DC2626';
+                    res.textContent = `Kunci: ${s.kunci}. ${s.bahas}`;
+                }
+            });
+
+            const nilaiBulat = Math.round((jmlBenar / bank15SoalLKPD.length) * 100);
+            document.getElementById('lkpd-nilai-angka').textContent = nilaiBulat;
+
+            const namaTampil = (document.getElementById('lkpd-nama-input').value || namaMuridAktif).trim() || 'Murid Kelas 5';
+            const absenTampil = (document.getElementById('lkpd-absen-input').value || absenMuridAktif).trim() || '-';
+
+            if (nilaiBulat >= 70) {
+                sfxBenar();
+                tampilkanDialog(
+                    'Hasil LKPD Pendidikan Pancasila',
+                    `Murid: <strong>${namaTampil}</strong> (Absen: <strong>${absenTampil}</strong>)<br>Jawaban benar: <strong>${jmlBenar} dari 15 soal</strong><br>Nilai Akhir: <strong style="font-size:1.3rem; color:#059669;">${nilaiBulat} / 100</strong>`,
+                    [{ label: 'Tutup', bg: '#059669', color: '#FFFFFF' }]
+                );
+            } else {
+                sfxSalah();
+                tampilkanDialog(
+                    'Hasil LKPD Pendidikan Pancasila',
+                    `Murid: <strong>${namaTampil}</strong> (Absen: <strong>${absenTampil}</strong>)<br>Jawaban benar: <strong>${jmlBenar} dari 15 soal</strong><br>Nilai Akhir: <strong style="font-size:1.3rem; color:#DC2626;">${nilaiBulat} / 100</strong><br>Periksa kunci &amp; pembahasan singkat pada tiap soal lalu perbaiki jawabanmu!`,
+                    [{ label: 'Perbaiki Jawaban', bg: '#F59E0B', color: '#0F172A' }]
+                );
+            }
+        }
+
+        function resetLKPD15() {
+            sfxResetBunyi();
+            document.getElementById('lkpd-nilai-angka').textContent = '0';
+            renderLKPD15();
+        }
+
+        /* ------------------------------------------------------------------
+           7. RESET GLOBAL SELURUH LAB MAYA
+           ------------------------------------------------------------------ */
+        function konfirmasiResetSemua() {
+            sfxKlik();
+            tampilkanDialog(
+                'Reset Seluruh Lab Maya?',
+                'Isian simulasi penerapan norma dan seluruh jawaban 15 soal LKPD akan dikosongkan ke awal. Lanjutkan?',
+                [
+                    { label: 'Batal', bg: '#E2E8F0', color: '#0F172A' },
+                    {
+                        label: 'Ya, Reset Semua',
+                        bg: '#DC2626',
+                        color: '#FFFFFF',
+                        onClick: () => {
+                            sfxResetBunyi();
+                            resetSimulasiNorma(false);
+                            document.getElementById('lkpd-nilai-angka').textContent = '0';
+                            renderLKPD15();
+                        }
+                    }
+                ]
+            );
+        }
+    </script>
+</body>
+</html>
